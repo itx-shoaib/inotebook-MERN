@@ -2,7 +2,7 @@
 const mongoose = require('mongoose');
 
 // Storing DB URI in mongoURI variable
-const mongoURI = "mongodb+srv://shoaib:shoaibjamil43@cluster0.gxfrpaw.mongodb.net/test"
+const mongoURI = "mongodb+srv://shoaib:shoaibjamil43@cluster0.gxfrpaw.mongodb.net/mern-inotebook"
 
 
 // Storing mongoDB connection in a variable.
