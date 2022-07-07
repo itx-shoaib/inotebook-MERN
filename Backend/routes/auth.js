@@ -4,13 +4,15 @@ const router = express.Router();
 const { body, validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const fetchUser = require('../middleware/fetchUser');
+
 // Connecting with our Database/models.
 const User = require('../models/User');
 
 // Making a JsonWebToken sign.
 const JWT_SECRET = "Thisisasecret$sign";
 
-// Creating a user by a POST request. Path: /api/auth/createuser
+//ROUTE:1 , Creating a user by a POST request. Path: /api/auth/createuser
 router.post('/createuser',[
     body('name' , 'Enter a valid name').isLength({ min: 3 }),
     body('email','Enter a valid email').isEmail(),
@@ -59,7 +61,7 @@ router.post('/createuser',[
 })
 
 
-// Login a user by a POST request. Path: /api/auth/login
+//ROUTE:2, Login a user by a POST request. Path: /api/auth/login
 router.post('/login',[
   body('email','Enter a valid email').isEmail(),
   body('password','Password cannot be blank').exists(),
@@ -106,4 +108,16 @@ router.post('/login',[
   }
 })
 
+//ROUTE:3, Get a user details by a POST request. Path: /api/auth/getuser.
+router.post('/getuser', fetchUser, async(req,res) => {
+try {
+  const userid = req.user.id;
+  const user = await User.findById(userid).select('-password')
+  res.send(user);
+} catch (error) {
+  // Returning a error if unable to make a user.
+  console.error(error.message);
+  res.status(500).send("Internal Server Error");
+}
+})
 module.exports = router;
