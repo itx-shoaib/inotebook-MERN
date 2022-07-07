@@ -109,8 +109,10 @@ router.post('/login',[
 })
 
 //ROUTE:3, Get a user details by a POST request. Path: /api/auth/getuser.
+// fetchUser is a middlewear.
 router.post('/getuser', fetchUser, async(req,res) => {
 try {
+  // req.user is from middlewear
   const userid = req.user.id;
   const user = await User.findById(userid).select('-password')
   res.send(user);

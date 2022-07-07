@@ -14,8 +14,11 @@ const fetchUser = (req,res,next)=>{
     
     try {
 
+        // Verify the token and also the secret sign
         const data = jwt.verify(token,JWT_SECRET);
+        // req.user will use in getuser api.
         req.user = data.user;
+        // next is the function which allow middlewear to move on next part of the api.
         next();
         
     } catch (error) {
