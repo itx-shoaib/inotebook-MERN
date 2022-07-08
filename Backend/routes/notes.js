@@ -9,7 +9,7 @@ router.get('/fetchallnotes', fetchUser, async (req, res) => {
     try {
         const notes = await Notes.find({ user: req.user.id });
         res.json(notes);
-        
+
     } catch (error) {
         // Returning a error if unable to make a user.
         console.error(error.message);
@@ -48,34 +48,66 @@ router.post('/addnote', fetchUser, [
 //ROUTE:3, Update a  note by PUT request. Path: /api/notes/updatenote
 router.put('/updatenote/:id', fetchUser, async (req, res) => {
     // Destructing, title,description,tag from req.body.
-    const {title,description,tag} = req.body;
+    const { title, description, tag } = req.body;
 
-    // Creating a new note.
-    const newNote = {};
-    // Checking
-    if (title) {
-        newNote.title = title
-    };
-    if (description) {
-        newNote.description = description
-    };
-    if (tag) {
-        newNote.tag = tag
-    };
+    try {
+        // Creating a new note.
+        const newNote = {};
+        // Checking
+        if (title) {
+            newNote.title = title
+        };
+        if (description) {
+            newNote.description = description
+        };
+        if (tag) {
+            newNote.tag = tag
+        };
 
-    // Finding note in db to update.
-    let note = await Notes.findById(req.params.id);
-    if (!note) {
-        return res.status(404).send("Not Found");
+        // Finding note in db.
+        let note = await Notes.findById(req.params.id);
+        if (!note) {
+            return res.status(404).send("Not Found");
+        }
+
+        //Making a restriction for other user to not change others note.
+        if (note.user.toString() !== req.user.id) {
+            return res.status(404).send("Not Allowed");
+        }
+
+        // Updating the find note in db
+        note = await Notes.findByIdAndUpdate(req.params.id, { $set: newNote }, { new: true })
+        res.json(note);
+    } catch (error) {
+        // Returning a error if unable to make a user.
+        console.error(error.message);
+        res.status(500).send("Internal Server Error");
     }
+})
 
-    //Making a restriction for other user to not change others note.
-    if(note.user.toString() !== req.user.id){
-        return res.status(404).send("Not Allowed");
+//ROUTE:4, Delete a  note by DELETE request. Path: /api/notes/deletenote
+router.delete('/deletenote/:id', fetchUser, async (req, res) => {
+
+    try {
+        // Finding note in db.
+        let note = await Notes.findById(req.params.id);
+        if (!note) {
+            return res.status(404).send("Not Found");
+        }
+
+        //Making a restriction for other user to not Delete other user note.
+        if (note.user.toString() !== req.user.id) {
+            return res.status(404).send("Not Allowed");
+        }
+
+        // Deleting the find note in db
+        note = await Notes.findByIdAndDelete(req.params.id)
+        res.json({ "Success": "Note has been deleted successfully.", note: note });
+    } catch (error) {
+        // Returning a error if unable to make a user.
+        console.error(error.message);
+        res.status(500).send("Internal Server Error");
     }
-
-    note = await Notes.findByIdAndUpdate(req.params.id, {$set : newNote} , {new:true})
-    res.json(note);
 })
 
 module.exports = router;
