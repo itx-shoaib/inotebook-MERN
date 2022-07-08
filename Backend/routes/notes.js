@@ -44,4 +44,38 @@ router.post('/addnote', fetchUser, [
         res.status(500).send("Internal Server Error");
     }
 })
+
+//ROUTE:3, Update a  note by PUT request. Path: /api/notes/updatenote
+router.put('/updatenote/:id', fetchUser, async (req, res) => {
+    // Destructing, title,description,tag from req.body.
+    const {title,description,tag} = req.body;
+
+    // Creating a new note.
+    const newNote = {};
+    // Checking
+    if (title) {
+        newNote.title = title
+    };
+    if (description) {
+        newNote.description = description
+    };
+    if (tag) {
+        newNote.tag = tag
+    };
+
+    // Finding note in db to update.
+    let note = await Notes.findById(req.params.id);
+    if (!note) {
+        return res.status(404).send("Not Found");
+    }
+
+    //Making a restriction for other user to not change others note.
+    if(note.user.toString() !== req.user.id){
+        return res.status(404).send("Not Allowed");
+    }
+
+    note = await Notes.findByIdAndUpdate(req.params.id, {$set : newNote} , {new:true})
+    res.json(note);
+})
+
 module.exports = router;
