@@ -46,15 +46,17 @@ export const Addnote = () => {
                             onChange={onChange}
                         />
                     </div>
-                    <div className="mb-3 form-check">
-                        <input
-                            type="checkbox"
-                            className="form-check-input"
-                            id="exampleCheck1"
-                        />
-                        <label className="form-check-label" htmlFor="exampleCheck1">
-                            Check me out
+                    <div className="mb-3">
+                        <label htmlFor="tags" className="form-label">
+                            Tag
                         </label>
+                        <input
+                            type="text"
+                            className="form-control"
+                            id="tags"
+                            name="tags"
+                            onChange={onChange}
+                        />
                     </div>
                     <button type="submit" className="btn btn-primary" onClick={handleClick}>
                         Submit
